@@ -50,11 +50,43 @@ header p {
   margin-top: 0;
 }
 
-.item {
-  padding: 12px;
-  margin: 8px 0;
+.tarea {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: #f4eee9;
   border-radius: 12px;
+  padding: 12px;
+  margin: 9px 0;
+}
+
+.tarea.completada .nombre {
+  text-decoration: line-through;
+  opacity: .55;
+}
+
+.tarea input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+}
+
+.nombre {
+  flex: 1;
+  font-size: 16px;
+}
+
+.hora {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.eliminar {
+  background: #c98f8f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 9px;
+  cursor: pointer;
 }
 
 input, button {
@@ -63,7 +95,9 @@ input, button {
   padding: 10px;
 }
 
-input {
+input[type="text"],
+input[type="time"],
+input[type="date"] {
   border: 1px solid #d5c5b9;
   width: 100%;
   margin-bottom: 10px;
@@ -80,15 +114,21 @@ button:hover {
   opacity: .9;
 }
 
-.check {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.agregar {
+  width: 100%;
+  margin-top: 10px;
+  font-weight: bold;
 }
 
-.check input {
-  width: auto;
-  margin: 0;
+.formulario {
+  background: #f8f2ed;
+  padding: 15px;
+  border-radius: 14px;
+  margin-top: 15px;
+}
+
+.oculto {
+  display: none;
 }
 
 .progress {
@@ -123,61 +163,67 @@ footer {
 
 <div class="container">
 
+  <!-- CALENDARIO -->
   <div class="card">
     <h2>📅 Calendario</h2>
     <input type="date" id="fecha">
     <p id="fechaSeleccionada">Selecciona una fecha</p>
   </div>
 
+  <!-- HORARIO FIJO -->
   <div class="card">
-    <h2>⏰ Mi horario</h2>
+    <h2>⏰ Horario del día</h2>
 
-    <div class="item">🚗 <strong>Traslado:</strong> 1 hora</div>
-    <div class="item">💼 <strong>Trabajo:</strong> 10:00 a 16:00</div>
-    <div class="item">🏋️ <strong>Gimnasio:</strong> horario flexible</div>
+    <div class="tarea">
+      <span class="hora">🚗 09:00</span>
+      <span class="nombre">Traslado</span>
+    </div>
+
+    <div class="tarea">
+      <span class="hora">💼 10:00–16:00</span>
+      <span class="nombre">Trabajo</span>
+    </div>
+
+    <div class="tarea">
+      <span class="hora">🏋️ 17:00</span>
+      <span class="nombre">Gimnasio</span>
+    </div>
+
+    <div class="tarea">
+      <span class="hora">🏠 18:30</span>
+      <span class="nombre">Organizar monoambiente</span>
+    </div>
+
+    <div class="tarea">
+      <span class="hora">🧴 20:00</span>
+      <span class="nombre">Cuidado personal</span>
+    </div>
   </div>
 
+  <!-- TAREAS -->
   <div class="card">
-    <h2>🏠 Organizar monoambiente</h2>
+    <h2>📝 Mis tareas</h2>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>🛏️ Ordenar las 2 camas</span>
-    </div>
+    <div id="listaTareas"></div>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>🛁 Limpiar el baño</span>
-    </div>
+    <button class="agregar" onclick="mostrarFormulario()">
+      ➕ Agregar nueva tarea
+    </button>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>🍳 Ordenar y limpiar la cocina</span>
-    </div>
+    <div id="formulario" class="formulario oculto">
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>🍽️ Ordenar comedor</span>
-    </div>
+      <input
+        type="text"
+        id="nombreTarea"
+        placeholder="Nombre de la tarea"
+      >
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>📺 Ordenar mueble del televisor</span>
-    </div>
+      <label>⏰ Horario</label>
+      <input type="time" id="horaTarea">
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>💻 Ordenar escritorio</span>
-    </div>
+      <button onclick="agregarTarea()">Guardar tarea</button>
+      <button onclick="cancelarTarea()">Cancelar</button>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>🧹 Barrer y limpiar el piso</span>
-    </div>
-
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>🧺 Guardar ropa y objetos</span>
     </div>
 
     <p id="progresoTexto">Progreso: 0%</p>
@@ -187,61 +233,93 @@ footer {
     </div>
   </div>
 
+  <!-- CASA -->
   <div class="card">
-    <h2>🧴 Cuidado personal</h2>
+    <h2>🏠 Organizar monoambiente</h2>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>🚿 Ducha</span>
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">🛏️ Ordenar las 2 camas</span>
     </div>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>🪥 Higiene dental</span>
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">🛁 Limpiar el baño</span>
     </div>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>🧴 Cuidado de la piel</span>
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">🍳 Ordenar la cocina</span>
     </div>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>💇 Cuidado del cabello</span>
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">🍽️ Ordenar comedor</span>
     </div>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>💧 Tomar agua</span>
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">📺 Ordenar mueble del televisor</span>
     </div>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>😴 Prepararse para descansar</span>
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">💻 Ordenar escritorio</span>
+    </div>
+
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">🧹 Limpiar el piso</span>
     </div>
   </div>
 
+  <!-- GIMNASIO -->
   <div class="card">
     <h2>🏋️ Gimnasio</h2>
 
-    <div class="item">
-      <strong>Objetivo de hoy:</strong>
-      <input type="text" placeholder="Escribe tu objetivo...">
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">Preparar ropa y bolso</span>
     </div>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>Preparar ropa y bolso</span>
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">Entrenamiento</span>
     </div>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>Entrenamiento realizado</span>
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">Estiramiento</span>
+    </div>
+  </div>
+
+  <!-- CUIDADO PERSONAL -->
+  <div class="card">
+    <h2>🧴 Cuidado personal</h2>
+
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">🚿 Ducha</span>
     </div>
 
-    <div class="check">
-      <input type="checkbox" class="tarea">
-      <span>Estiramiento</span>
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">🪥 Higiene dental</span>
+    </div>
+
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">🧴 Cuidado de la piel</span>
+    </div>
+
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">💇 Cuidado del cabello</span>
+    </div>
+
+    <div class="tarea">
+      <input type="checkbox" class="tareaCasa">
+      <span class="nombre">💧 Tomar agua</span>
     </div>
   </div>
 
@@ -253,37 +331,232 @@ footer {
 
 <script>
 
+let tareas = JSON.parse(localStorage.getItem("misTareas")) || [];
+
 const fecha = document.getElementById("fecha");
 const fechaSeleccionada = document.getElementById("fechaSeleccionada");
 
+fecha.value = localStorage.getItem("fechaDiario") || "";
+
+if (fecha.value) {
+  mostrarFecha(fecha.value);
+}
+
 fecha.addEventListener("change", function() {
-  if (this.value) {
-    const partes = this.value.split("-");
-    fechaSeleccionada.textContent =
-      "Fecha elegida: " + partes[2] + "/" + partes[1] + "/" + partes[0];
-  }
+  localStorage.setItem("fechaDiario", this.value);
+  mostrarFecha(this.value);
 });
 
-const tareas = document.querySelectorAll(".tarea");
-const barra = document.getElementById("barra");
-const progresoTexto = document.getElementById("progresoTexto");
+function mostrarFecha(valor) {
+  const partes = valor.split("-");
+  fechaSeleccionada.textContent =
+    "Fecha elegida: " +
+    partes[2] + "/" +
+    partes[1] + "/" +
+    partes[0];
+}
+
+
+// MOSTRAR FORMULARIO
+
+function mostrarFormulario() {
+  document.getElementById("formulario").classList.remove("oculto");
+  document.getElementById("nombreTarea").focus();
+}
+
+
+// CANCELAR
+
+function cancelarTarea() {
+  document.getElementById("formulario").classList.add("oculto");
+  document.getElementById("nombreTarea").value = "";
+  document.getElementById("horaTarea").value = "";
+}
+
+
+// AGREGAR
+
+function agregarTarea() {
+
+  const nombre =
+    document.getElementById("nombreTarea").value.trim();
+
+  const hora =
+    document.getElementById("horaTarea").value;
+
+  if (nombre === "") {
+    alert("Escribe el nombre de la tarea.");
+    return;
+  }
+
+  tareas.push({
+    id: Date.now(),
+    nombre: nombre,
+    hora: hora,
+    completada: false
+  });
+
+  guardar();
+  mostrarTareas();
+  cancelarTarea();
+}
+
+
+// MOSTRAR TAREAS
+
+function mostrarTareas() {
+
+  const lista = document.getElementById("listaTareas");
+
+  lista.innerHTML = "";
+
+  tareas.sort(function(a, b) {
+    return (a.hora || "99:99").localeCompare(b.hora || "99:99");
+  });
+
+  tareas.forEach(function(tarea) {
+
+    const div = document.createElement("div");
+
+    div.className =
+      "tarea " +
+      (tarea.completada ? "completada" : "");
+
+    div.innerHTML = `
+
+      <input
+        type="checkbox"
+        ${tarea.completada ? "checked" : ""}
+        onchange="marcarTarea(${tarea.id})"
+      >
+
+      <span class="hora">
+        ${tarea.hora || "--:--"}
+      </span>
+
+      <span class="nombre">
+        ${tarea.nombre}
+      </span>
+
+      <button
+        class="eliminar"
+        onclick="eliminarTarea(${tarea.id})"
+      >
+        🗑️
+      </button>
+
+    `;
+
+    lista.appendChild(div);
+  });
+
+  actualizarProgreso();
+}
+
+
+// MARCAR
+
+function marcarTarea(id) {
+
+  const tarea = tareas.find(t => t.id === id);
+
+  if (tarea) {
+    tarea.completada = !tarea.completada;
+  }
+
+  guardar();
+  mostrarTareas();
+}
+
+
+// ELIMINAR
+
+function eliminarTarea(id) {
+
+  const confirmar =
+    confirm("¿Quieres eliminar esta tarea?");
+
+  if (!confirmar) {
+    return;
+  }
+
+  tareas = tareas.filter(function(tarea) {
+    return tarea.id !== id;
+  });
+
+  guardar();
+  mostrarTareas();
+}
+
+
+// GUARDAR
+
+function guardar() {
+
+  localStorage.setItem(
+    "misTareas",
+    JSON.stringify(tareas)
+  );
+}
+
+
+// PROGRESO
 
 function actualizarProgreso() {
 
   const total = tareas.length;
-  const hechas = document.querySelectorAll(".tarea:checked").length;
 
-  const porcentaje = total === 0
-    ? 0
-    : Math.round((hechas / total) * 100);
+  const hechas =
+    tareas.filter(t => t.completada).length;
 
-  barra.style.width = porcentaje + "%";
-  progresoTexto.textContent = "Progreso: " + porcentaje + "%";
+  const porcentaje =
+    total === 0
+      ? 0
+      : Math.round((hechas / total) * 100);
+
+  document.getElementById("barra").style.width =
+    porcentaje + "%";
+
+  document.getElementById("progresoTexto").textContent =
+    "Progreso: " + porcentaje + "%";
 }
 
-tareas.forEach(tarea => {
-  tarea.addEventListener("change", actualizarProgreso);
+
+// TAREAS DE CASA
+
+const tareasCasa =
+  document.querySelectorAll(".tareaCasa");
+
+tareasCasa.forEach(function(tarea, indice) {
+
+  const guardada =
+    localStorage.getItem("casa_" + indice);
+
+  if (guardada === "true") {
+    tarea.checked = true;
+    tarea.parentElement.classList.add("completada");
+  }
+
+  tarea.addEventListener("change", function() {
+
+    localStorage.setItem(
+      "casa_" + indice,
+      tarea.checked
+    );
+
+    if (tarea.checked) {
+      tarea.parentElement.classList.add("completada");
+    } else {
+      tarea.parentElement.classList.remove("completada");
+    }
+  });
+
 });
+
+
+// INICIAR
+
+mostrarTareas();
 
 </script>
 
